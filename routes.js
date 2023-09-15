@@ -1,5 +1,5 @@
 const express = require('express');
-const router = new express.Router();
+const router = express.Router();
 var fakeDb = require('./fakeDb');
 
 router.get("/", function(req, res){
@@ -10,14 +10,20 @@ router.post("/", function(req, res){
     return res.json(fakeDb);
 })
 router.get("/:itemname", function(req, res){
-    return res.json(fakeDb.find(x=>x.name==itemname));
+    let itemreq =  res.json((fakeDb.find(item=>item.name = req.params.itemname)));
+    if(itemreq == undefined){
+        throw new Error("item not found", 404);
+    } else{
+        return res.body(itemreq);
+    }
 })
 router.patch("/:itemname", function(req,res){
-    fakeDb[fakeDb.findIndex(x=>x.name==itemname)] = req.body;
-    return res.json(fakeDb.find(x=>x.name==itemname))
+    let i = fakeDb.findIndex(x=>x.name==req.params.itemname)
+    fakeDb[i] = req.body;
+    return res.json(fakeDb[i]);
 })
 router.delete("/:itemname", function(req,res){
-    newitems = fakeDb.splice(fakeDb.findIndex(x=>x.name==itemname),1);
+    fakeDb.splice(fakeDb.findIndex(x=>x.name==req.params.itemname),1);
     return res.json(fakeDb)
 })
 
